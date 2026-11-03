@@ -35,3 +35,9 @@ dependencies.
 The library's guide used to live at the root of the domain. Every page it had
 is listed in [`site/moved.txt`](site/moved.txt), and the build writes a page at
 each old address that sends visitors to the new one.
+
+## Brand
+
+[`brand/`](brand/) holds the logo as PNG: `avatar.png` on the site's dark
+background, used for the GitHub organization, and `logo.png` on transparency.
+Both are drawn from `site/assets/logo.svg`, one block per pixel.
