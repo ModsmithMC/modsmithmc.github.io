@@ -1,0 +1,19 @@
+[project]
+name = "modsmith-sphinx-theme"
+version = "0.1.0"
+description = "The Sphinx theme shared by Modsmith's sites."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+authors = [{ name = "MeNeither", email = "pengyufeng2003@outlook.com" }]
+dependencies = ["sphinx>=9.1"]
+
+[project.entry-points."sphinx.html_themes"]
+modsmith = "modsmith_sphinx_theme"
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/modsmith_sphinx_theme"]

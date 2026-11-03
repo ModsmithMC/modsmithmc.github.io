@@ -1,0 +1,20 @@
+[project]
+name = "modsmith-website"
+version = "0"
+description = "Modsmith's home page, and the theme its sites share."
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+docs = [
+    "modsmith-sphinx-theme",
+    "myst-parser>=5.1.0",
+    "sphinx>=9.1.1",
+]
+
+[tool.uv]
+package = false
+default-groups = ["docs"]
+
+[tool.uv.sources]
+modsmith-sphinx-theme = { path = "theme", editable = true }
