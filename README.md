@@ -4,14 +4,14 @@
 
 # Modsmith's website
 
-The source of [modsmith.meneither.site](https://modsmith.meneither.site/), and
+The source of [modsmithmc.org](https://modsmithmc.org/), and
 the theme that all of Modsmith's sites share.
 
 | Address | What it is | Built from |
 | --- | --- | --- |
-| [`/`](https://modsmith.meneither.site/) | The home page, for players | `site/` in this repository |
-| [`/modsmith/`](https://modsmith.meneither.site/modsmith/) | The command line's guide | [ModsmithMC/modsmith](https://github.com/ModsmithMC/modsmith) |
-| [`/modsmith-python/`](https://modsmith.meneither.site/modsmith-python/) | The Python library's guide | [ModsmithMC/modsmith-python](https://github.com/ModsmithMC/modsmith-python) |
+| [`/`](https://modsmithmc.org/) | The home page, for players | `site/` in this repository |
+| [`/modsmith/`](https://modsmithmc.org/modsmith/) | The command line's guide | [ModsmithMC/modsmith](https://github.com/ModsmithMC/modsmith) |
+| [`/modsmith-python/`](https://modsmithmc.org/modsmith-python/) | The Python library's guide | [ModsmithMC/modsmith-python](https://github.com/ModsmithMC/modsmith-python) |
 
 Each repository publishes its own pages with GitHub Pages. This repository is
 the organization's site, so it owns the domain, and the other two appear under

@@ -10,7 +10,7 @@ author = "MeNeither"
 copyright = "2026 MeNeither"
 release = ""
 
-SITE = "https://modsmith.meneither.site/"
+SITE = "https://modsmithmc.org/"
 CLI = SITE + "modsmith/"
 LIBRARY = SITE + "modsmith-python/"
 

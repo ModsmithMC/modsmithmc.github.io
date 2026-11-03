@@ -10,7 +10,7 @@
     <h2>Modpacks for the official launcher</h2>
     <p>Install Minecraft modpacks, mods, resource packs and shaders from Modrinth and CurseForge. Modsmith prepares the files and adds an installation to the official launcher, where you choose it and play.</p>
     <div class="actions">
-      <a class="button primary" href="https://modsmith.meneither.site/modsmith/get-started/installation/">Get Modsmith</a>
+      <a class="button primary" href="https://modsmithmc.org/modsmith/get-started/installation/">Get Modsmith</a>
       <a class="button" href="https://github.com/ModsmithMC/modsmith">View on GitHub</a>
     </div>
   </div>
@@ -118,7 +118,7 @@ Add to fo
       <h2>Make your own tools</h2>
       <p>Everything Modsmith does comes from its Python library, which you can use to build your own installer, updater or launcher helper.</p>
       <div class="actions">
-        <a class="button" href="https://modsmith.meneither.site/modsmith-python/">Read the library's guide</a>
+        <a class="button" href="https://modsmithmc.org/modsmith-python/">Read the library's guide</a>
       </div>
     </div>
     <div>
@@ -143,7 +143,7 @@ with ms.platforms.Modrinth("my-tool/1.0") as modrinth:
     <h2>Get Modsmith</h2>
     <p class="lede">The command line works on Windows, macOS and Linux. A desktop app is on its way.</p>
     <div class="actions">
-      <a class="button primary" href="https://modsmith.meneither.site/modsmith/get-started/installation/">Install the command line</a>
+      <a class="button primary" href="https://modsmithmc.org/modsmith/get-started/installation/">Install the command line</a>
     </div>
   </div>
 </div>

@@ -18,8 +18,8 @@ extensions = ["modsmith_sphinx_theme"]
 html_theme = "modsmith"
 modsmith_sections = {"get-started": "Get started", "reference": "Reference"}
 html_theme_options = {
-    "base_url": "https://modsmith.meneither.site/some-site/",
-    "home_url": "https://modsmith.meneither.site/",
+    "base_url": "https://modsmithmc.org/some-site/",
+    "home_url": "https://modsmithmc.org/",
     "repository": "ModsmithMC/some-repo",
 }
 ```
