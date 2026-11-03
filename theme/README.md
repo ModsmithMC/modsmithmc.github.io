@@ -31,6 +31,10 @@ html_theme_options = {
 | `repository` | The GitHub repository shown in the header and footer |
 | `links` | Extra `[title, url]` pairs for the header, such as the other sites |
 | `search` | Whether to show the search box. Defaults to true |
+| `hero_home` | Whether the root page is a full-width hero page. Defaults to true |
+| `site_title` | The name in page titles, such as `Modsmith command line`. Defaults to the project's name |
+| `site_name` | The site's name, shown beside the logo and linking to the site's own home. The logo leads to `home_url` |
+| `sites` | `[title, url, note]` for each of Modsmith's sites, linked from the footer |
 
 Each folder listed in `modsmith_sections` becomes a header entry with its own
 sidebar, built from the toctree caption of the same title.

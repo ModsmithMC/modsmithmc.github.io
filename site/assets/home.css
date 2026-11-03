@@ -1,0 +1,83 @@
+/* The home page, on top of the shared theme. */
+
+.hero-copy h1 {
+  max-width: 700px;
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(40px, 6vw, 72px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+}
+
+/* Safe to try */
+
+.promises {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  text-align: left;
+}
+
+.promises > div {
+  padding: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.promises h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+}
+
+.promises p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* Footer */
+
+.footer-links a:not(.footer-icon) {
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.footer-links {
+  align-items: center;
+  gap: 18px;
+}
+
+@media (max-width: 900px) {
+  .promises {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .promises {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.band-copy a.more {
+  font-weight: 600;
+}
+
+.footer-links {
+  flex-wrap: wrap;
+}
+
+@media (max-width: 560px) {
+  .footer-links {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 560px) {
+  .site-footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+}

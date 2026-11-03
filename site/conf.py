@@ -15,21 +15,30 @@ CLI = SITE + "modsmith/"
 LIBRARY = SITE + "modsmith-python/"
 
 extensions = ["myst_parser", "modsmith_sphinx_theme"]
-exclude_patterns = ["_build", "assets", "README.md"]
+exclude_patterns = ["_build", "assets", "home", "README.md"]
+# The home page is written by hand, in home/, and copied over the site's root.
+root_doc = "sitemap"
+html_extra_path = ["home"]
 
 html_theme = "modsmith"
 html_title = project
 html_baseurl = SITE
 html_theme_options = {
     "base_url": SITE,
+    "home_url": SITE,
     "repository": "ModsmithMC/modsmith",
-    "links": [["Command line", CLI], ["Python library", LIBRARY]],
+    "site_name": "Home",
+    "sites": [
+        ["Home", SITE, "What Modsmith is, and how to get it"],
+        ["Command line", CLI, "Install modpacks, and every command"],
+        ["Python library", LIBRARY, "Build your own tools"],
+    ],
     "search": False,
 }
 html_favicon = "assets/logo.svg"
 html_static_path = ["assets"]
 html_show_sourcelink = False
-myst_enable_extensions = ["colon_fence"]
+myst_enable_extensions = ["colon_fence", "deflist"]
 
 # The library's documentation used to live at the root of this domain.
 MOVED = Path(__file__).with_name("moved.txt")
