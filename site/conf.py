@@ -11,7 +11,7 @@ copyright = "2026 MeNeither"
 release = ""
 
 SITE = "https://modsmithmc.org/"
-CLI = SITE + "modsmith/"
+CLI = SITE + "modsmith-cli/"
 LIBRARY = SITE + "modsmith-python/"
 
 extensions = ["myst_parser", "modsmith_sphinx_theme"]
@@ -26,7 +26,7 @@ html_baseurl = SITE
 html_theme_options = {
     "base_url": SITE,
     "home_url": SITE,
-    "repository": "ModsmithMC/modsmith",
+    "repository": "ModsmithMC/modsmith-cli",
     "site_name": "Home",
     "sites": [
         ["Home", SITE, "What Modsmith is, and how to get it"],
@@ -34,6 +34,10 @@ html_theme_options = {
         ["Python library", LIBRARY, "Build your own tools"],
     ],
     "search": False,
+    # The command line's guide was at /modsmith/ before its repository was
+    # renamed. This site owns every path no other repository does, so its 404
+    # page forwards those.
+    "moved": [["/modsmith/", "/modsmith-cli/"]],
 }
 html_favicon = "assets/logo.svg"
 html_static_path = ["assets"]

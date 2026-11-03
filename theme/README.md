@@ -35,6 +35,7 @@ html_theme_options = {
 | `site_title` | The name in page titles, such as `Modsmith command line`. Defaults to the project's name |
 | `site_name` | The site's name, shown beside the logo and linking to the site's own home. The logo leads to `home_url` |
 | `sites` | `[title, url, note]` for each of Modsmith's sites, linked from the footer |
+| `moved` | `[old, new]` path prefixes, such as `["/modsmith/", "/modsmith-cli/"]`. The 404 page sends a missing page under `old` to the same page under `new` |
 
 Each folder listed in `modsmith_sections` becomes a header entry with its own
 sidebar, built from the toctree caption of the same title.

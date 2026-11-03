@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://modsmithmc.org/">Website</a> · <a href="https://modsmithmc.org/modsmith/">Command line</a> · <a href="https://modsmithmc.org/modsmith-python/">Python library</a>
+  <a href="https://modsmithmc.org/">Website</a> · <a href="https://modsmithmc.org/modsmith-cli/">Command line</a> · <a href="https://modsmithmc.org/modsmith-python/">Python library</a>
 </p>
 
 ---
@@ -17,7 +17,7 @@
 | Address | What it is | Built from |
 | --- | --- | --- |
 | [`/`](https://modsmithmc.org/) | The project's home: what Modsmith does, and where to start | `site/` in this repository |
-| [`/modsmith/`](https://modsmithmc.org/modsmith/) | The command line's guide, with a page for every command | [ModsmithMC/modsmith](https://github.com/ModsmithMC/modsmith) |
+| [`/modsmith-cli/`](https://modsmithmc.org/modsmith-cli/) | The command line's guide, with a page for every command | [ModsmithMC/modsmith-cli](https://github.com/ModsmithMC/modsmith-cli) |
 | [`/modsmith-python/`](https://modsmithmc.org/modsmith-python/) | The Python library's guide and API reference | [ModsmithMC/modsmith-python](https://github.com/ModsmithMC/modsmith-python) |
 
 Each repository publishes its own pages with GitHub Pages. This repository is

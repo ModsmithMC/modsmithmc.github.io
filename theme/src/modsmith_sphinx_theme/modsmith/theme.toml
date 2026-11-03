@@ -14,3 +14,4 @@ site_title = ""
 sites = []
 search = true
 hero_home = true
+moved = []
