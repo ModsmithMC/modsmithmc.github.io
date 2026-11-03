@@ -49,26 +49,6 @@
     }
   });
 
-  // The site switcher in the header.
-  const switcher = document.querySelector("[data-switch]");
-  const switchButton = switcher?.querySelector("[data-switch-button]");
-  const switchMenu = switcher?.querySelector("[data-switch-menu]");
-  const setSwitch = (open) => {
-    if (!switchMenu) return;
-    switchMenu.hidden = !open;
-    switchButton.setAttribute("aria-expanded", String(open));
-  };
-  switchButton?.addEventListener("click", () => setSwitch(switchMenu.hidden));
-  document.addEventListener("click", (event) => {
-    if (switcher && !switcher.contains(event.target)) setSwitch(false);
-  });
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && switchMenu && !switchMenu.hidden) {
-      setSwitch(false);
-      switchButton.focus();
-    }
-  });
-
   // Tabs. Groups with the same choices switch together, and start on the
   // reader's system the first time.
   const system = /Windows/i.test(navigator.userAgent)
@@ -221,7 +201,7 @@
       `<span title="Forks">${icons.forks}${compact(forks)}</span>`;
   };
   // The sites share one origin, so each repository is cached on its own.
-  const key = `modsmith-repo:${repo?.dataset.repo}`;
+  const key = `modsmith-repo-v2:${repo?.dataset.repo}`;
   const load = async () => {
     try {
       const cached = JSON.parse(sessionStorage.getItem(key) ?? "null");
@@ -230,7 +210,7 @@
       if (!response.ok) return;
       const data = await response.json();
       const summary = {
-        name: data.full_name,
+        name: data.name,
         stars: data.stargazers_count,
         forks: data.forks_count,
       };
@@ -240,33 +220,51 @@
   };
   if (repo && repoName && facts) load();
 
-  // Terminals type their command and show its output, over and over, while
-  // they are on screen. A launcher drawing that follows a terminal shows the
-  // installation it made. Readers who prefer less motion see the end at once.
+  // Terminals type each command and show its output, one after another, over
+  // and over, while they are on screen. Each terminal keeps the height of its
+  // full output from the start, so nothing below it moves. A launcher drawing
+  // that follows a terminal shows the installation it made. Readers who
+  // prefer less motion see the end at once.
   const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   document.querySelectorAll("[data-terminal]").forEach((terminal) => {
-    const pre = terminal.querySelector("pre[data-command]");
-    const typed = terminal.querySelector(".typed");
-    const output = terminal.querySelector(".out");
-    if (!pre || !typed || !output) return;
-    const command = pre.dataset.command;
-    const lines = output.innerHTML.split("\n");
+    const pre = terminal.querySelector("pre");
+    const steps = [...terminal.querySelectorAll(".step")].map((step) => ({
+      step,
+      command: step.dataset.command,
+      typed: step.querySelector(".typed"),
+      output: step.querySelector(".out"),
+      lines: step.querySelector(".out").innerHTML.split("\n"),
+    }));
+    if (!pre || !steps.length) return;
     const launcher = terminal.id
       ? document.querySelector(`[data-follows="${terminal.id}"]`)
       : null;
     const status = launcher?.querySelector("[data-status]");
-    const setLauncher = (state, text) => {
+    const states = ["open", "added", "selected", "playing"];
+    const setLauncher = (state, text = "") => {
       if (!launcher) return;
-      launcher.classList.toggle("added", state !== "empty");
-      launcher.classList.toggle("playing", state === "playing");
+      const reached = states.indexOf(state);
+      states.forEach((name, index) => {
+        // "open" lasts only until the new installation is chosen.
+        const on = name === "open" ? reached >= 0 && reached < 2 : index <= reached;
+        launcher.classList.toggle(name, on && reached >= 0);
+      });
       if (status) status.textContent = text;
     };
+    const showAll = () => {
+      steps.forEach(({ step, command, typed, output, lines }) => {
+        step.hidden = false;
+        typed.textContent = command;
+        output.innerHTML = lines.join("\n");
+      });
+    };
+    // Measure the finished terminal, and keep that height.
+    showAll();
+    pre.style.minHeight = `${pre.offsetHeight}px`;
     if (still) {
-      typed.textContent = command;
-      output.innerHTML = lines.join("\n");
       terminal.classList.add("done");
-      setLauncher("added", "");
+      setLauncher("selected");
       return;
     }
     let visible = false;
@@ -275,29 +273,39 @@
       running = true;
       while (visible) {
         terminal.classList.remove("done", "clearing");
-        setLauncher("empty", "");
-        typed.textContent = "";
-        output.innerHTML = "";
+        setLauncher("none");
+        steps.forEach(({ step, typed, output }) => {
+          step.hidden = true;
+          typed.textContent = "";
+          output.innerHTML = "";
+        });
         await sleep(500);
-        for (let i = 1; i <= command.length; i += 1) {
-          typed.textContent = command.slice(0, i);
-          await sleep(38);
-        }
-        await sleep(450);
-        for (let i = 0; i < lines.length; i += 1) {
-          output.innerHTML = lines.slice(0, i + 1).join("\n");
-          // A question waits a moment for its answer, as a player would.
-          await sleep(/\[Y\/n\]/.test(lines[i]) ? 900 : 110);
+        for (const { step, command, typed, output, lines } of steps) {
+          step.hidden = false;
+          for (let i = 1; i <= command.length; i += 1) {
+            typed.textContent = command.slice(0, i);
+            await sleep(38);
+          }
+          await sleep(450);
+          for (let i = 0; i < lines.length; i += 1) {
+            output.innerHTML = lines.slice(0, i + 1).join("\n");
+            // A question waits a moment for its answer, as a player would.
+            await sleep(/\[Y\/n\]/.test(lines[i]) ? 900 : 110);
+          }
+          await sleep(1200);
         }
         terminal.classList.add("done");
         if (launcher) {
-          await sleep(500);
-          setLauncher("added", "A new installation, ready to play.");
-          await sleep(1800);
+          setLauncher("open");
+          await sleep(900);
+          setLauncher("added");
+          await sleep(1300);
+          setLauncher("selected");
+          await sleep(1100);
           setLauncher("playing", "Starting Minecraft...");
-          await sleep(1600);
+          await sleep(1800);
         }
-        await sleep(3500);
+        await sleep(3000);
         terminal.classList.add("clearing");
         await sleep(500);
       }

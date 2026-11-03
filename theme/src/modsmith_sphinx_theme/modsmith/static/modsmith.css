@@ -187,80 +187,24 @@ svg {
   font: 12.5px var(--mono);
 }
 
-/* Which of Modsmith's sites this is, and the way to the others. */
-.site-switch {
-  position: relative;
+/* Which of Modsmith's sites this is. The logo leads to the project's home. */
+.site-label {
   margin-left: -8px;
-}
-
-.site-switch-button {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  height: 32px;
-  padding: 0 6px 0 12px;
-  border: 0;
+  padding-left: 12px;
   border-left: 1px solid var(--border);
-  background: none;
   color: var(--text);
-  font: 600 15px var(--sans);
+  font-weight: 600;
   white-space: nowrap;
-  cursor: pointer;
 }
 
-.site-switch-button svg {
-  width: 18px;
-  height: 18px;
-  fill: none;
-  stroke: var(--muted);
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.site-switch-button:hover,
-.site-switch-button[aria-expanded="true"] {
-  box-shadow: inset 0 -2px 0 var(--accent);
-}
-
-.site-switch-menu {
-  position: absolute;
-  top: calc(100% + 10px);
-  left: 0;
-  z-index: 30;
-  display: grid;
-  min-width: 280px;
-  padding: 6px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  box-shadow: 0 12px 32px rgb(0 0 0 / 18%);
-}
-
-.site-switch-menu[hidden] {
-  display: none;
-}
-
-.site-switch-menu a {
-  display: grid;
-  gap: 2px;
-  padding: 10px 12px;
-  color: var(--text);
-}
-
-.site-switch-menu a:hover {
-  background: var(--sunken);
+.site-label:hover {
   text-decoration: none;
-  box-shadow: inset 0 -2px 0 var(--accent);
+  box-shadow: 0 2px 0 var(--accent);
 }
 
-.site-switch-menu a.current strong::after {
-  content: " \2713";
-  color: var(--accent);
-}
-
-.site-switch-menu span {
+.footer-links a.footer-text {
   color: var(--muted);
-  font-size: 13.5px;
+  font-size: 14.5px;
 }
 
 /* Tabs, such as one per operating system. */
@@ -1690,7 +1634,6 @@ ul.search {
   }
 
   .site-nav,
-  .site-switch-button span,
   form.search kbd,
   .version,
   .repo-text {
@@ -2423,132 +2366,178 @@ a[data-kind="cmd"]::before,
   opacity: 0;
 }
 
-/* A drawing of a launcher's installation list, which plays along with a terminal. */
+/* A drawing of a launcher: a sidebar, a banner, and a bar with the
+   installation picker and the Play button. It keeps one size throughout. */
 .launcher-demo {
+  position: relative;
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  height: 300px;
   border: 1px solid #22252b;
-  background: #16181c;
+  background: #1e1f22;
   color: #e4e5e9;
-  font: 14px/1.4 var(--sans);
+  font: 14px/1.35 var(--sans);
   box-shadow: 0 18px 40px rgb(0 0 0 / 22%);
+  overflow: hidden;
 }
 
-.launcher-demo .launcher-bar {
-  padding: 8px 14px;
-  border-bottom: 1px solid #22252b;
-  color: #8a909a;
-  font-size: 12.5px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.launcher-demo .launcher-body {
+.launcher-demo .launcher-side {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 16px;
-  align-items: end;
-  padding: 14px;
+  align-content: start;
+  gap: 8px;
+  padding: 12px 10px;
+  background: #2a2b2f;
 }
 
-.launcher-demo ul {
+.launcher-demo .launcher-side i {
+  width: 44px;
+  height: 44px;
+  background: #3a3c41;
+}
+
+.launcher-demo .launcher-side i:first-child {
+  box-shadow: inset 3px 0 0 #ffffff;
+}
+
+.launcher-demo .launcher-main {
+  position: relative;
   display: grid;
-  gap: 4px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-width: 0;
 }
 
-.launcher-demo li {
-  display: grid;
-  grid-template-columns: 32px minmax(0, 1fr) auto;
-  gap: 2px 10px;
-  align-items: center;
-  padding: 7px 10px;
-  border: 1px solid transparent;
-  background: #1e2126;
-}
-
-.launcher-demo li > i {
-  grid-row: span 2;
-  width: 32px;
-  height: 32px;
+.launcher-demo .launcher-banner {
+  background: #0c1016 url("hero-small.svg") 70% 100% / cover no-repeat;
   image-rendering: pixelated;
 }
 
-.launcher-demo li b {
+.launcher-demo .launcher-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  background: #262729;
+}
+
+.launcher-demo .picker,
+.launcher-demo .choice {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 0 10px;
+  align-items: center;
+  min-width: 0;
+}
+
+.launcher-demo .picker {
+  padding: 6px 8px;
+  border: 1px solid #3a3c41;
+}
+
+.launcher-demo .picker > i,
+.launcher-demo .choice > i {
+  grid-row: span 2;
+  width: 30px;
+  height: 30px;
+  image-rendering: pixelated;
+}
+
+.launcher-demo b,
+.launcher-demo small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.launcher-demo b {
   font-weight: 600;
 }
 
-.launcher-demo li small {
-  color: #8a909a;
-  font: 12px var(--mono);
-}
-
-.launcher-demo li em {
-  grid-row: span 2;
-  padding: 2px 8px;
-  background: #3c8527;
-  color: #ffffff;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 700;
-  opacity: 0;
-}
-
-/* Pixel icons, drawn with gradients so the drawing needs no images. */
-.launcher-demo .icon-pack {
-  background:
-    linear-gradient(#ffd27a 0 0) 10px 6px / 12px 4px no-repeat,
-    linear-gradient(#ff9a2e 0 0) 10px 10px / 12px 2px no-repeat,
-    linear-gradient(#b8b8b8 0 0) 4px 12px / 24px 4px no-repeat,
-    linear-gradient(#8e8e8e 0 0) 10px 16px / 12px 8px no-repeat,
-    linear-gradient(#646464 0 0) 6px 24px / 20px 4px no-repeat,
-    #2a2f38;
-}
-
-.launcher-demo .icon-grass {
-  background:
-    linear-gradient(#52a535 0 0) 0 0 / 32px 10px no-repeat,
-    linear-gradient(#3c8527 0 0) 0 10px / 32px 2px no-repeat,
-    #7a5233;
-}
-
-.launcher-demo .icon-dirt {
-  background:
-    linear-gradient(#5c3d24 0 0) 6px 6px / 6px 6px no-repeat,
-    linear-gradient(#5c3d24 0 0) 20px 18px / 6px 6px no-repeat,
-    #7a5233;
+.launcher-demo small {
+  color: #9a9ca3;
+  font: 11.5px var(--mono);
 }
 
 .launcher-demo .launcher-play {
-  min-width: 112px;
-  padding: 12px 18px;
-  border: 0;
+  padding: 12px 40px;
   background: #3c8527;
   box-shadow: inset 0 -4px 0 #2a641c, inset 0 2px 0 #52a535;
   color: #ffffff;
-  font: 700 16px var(--sans);
-  cursor: default;
+  font: 700 18px var(--sans);
+  letter-spacing: 0.02em;
 }
 
-/* The new installation is hidden until the terminal has made it. */
-.launcher-demo .new {
-  max-height: 0;
-  padding-block: 0;
-  overflow: hidden;
+.launcher-demo .launcher-status {
+  justify-self: end;
+  margin: 0;
+  color: #9a9ca3;
+  font-size: 12.5px;
+  text-align: right;
+}
+
+/* The picker's list opens upward, over the banner. */
+.launcher-demo .choices {
+  position: absolute;
+  bottom: 62px;
+  left: 14px;
+  display: grid;
+  gap: 2px;
+  width: min(270px, calc(100% - 28px));
+  margin: 0;
+  padding: 4px;
+  border: 1px solid #3c8527;
+  background: #2a2b2f;
+  list-style: none;
   opacity: 0;
-  transition: max-height 0.5s, padding 0.5s, opacity 0.5s, border-color 0.5s;
+  transform: translateY(8px);
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none;
 }
 
-.launcher-demo.added .new {
-  max-height: 60px;
-  padding-block: 7px;
+.launcher-demo .choice {
+  padding: 5px 6px;
+}
+
+.launcher-demo .choice.new {
+  display: none;
+  background: #33402f;
+}
+
+.launcher-demo .choice em {
+  margin-left: 6px;
+  padding: 0 6px;
+  background: #3c8527;
+  color: #ffffff;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.launcher-demo.open .choices {
+  opacity: 1;
+  transform: none;
+}
+
+.launcher-demo.added .choice.new {
+  display: grid;
+}
+
+/* The picker shows the latest release, until the new installation is chosen. */
+.launcher-demo .picker .default {
+  display: contents;
+}
+
+.launcher-demo .picker .chosen,
+.launcher-demo.selected .picker .default {
+  display: none;
+}
+
+.launcher-demo.selected .picker .chosen {
+  display: contents;
+}
+
+.launcher-demo.selected .picker {
   border-color: #3c8527;
-  opacity: 1;
-}
-
-.launcher-demo.added .new em {
-  opacity: 1;
-  transition: opacity 0.4s 0.4s;
 }
 
 .launcher-demo.playing .launcher-play {
@@ -2557,17 +2546,56 @@ a[data-kind="cmd"]::before,
   box-shadow: inset 0 -2px 0 #2a641c;
 }
 
-.launcher-demo .launcher-status {
-  grid-column: 1 / -1;
-  min-height: 1.4em;
-  color: #8a909a;
-  font-size: 13px;
+/* Pixel icons, drawn with gradients so the drawing needs no images. */
+.launcher-demo .icon-pack {
+  background:
+    linear-gradient(#ffd27a 0 0) 9px 6px / 12px 3px no-repeat,
+    linear-gradient(#ff9a2e 0 0) 9px 9px / 12px 3px no-repeat,
+    linear-gradient(#b8b8b8 0 0) 3px 12px / 24px 3px no-repeat,
+    linear-gradient(#8e8e8e 0 0) 9px 15px / 12px 6px no-repeat,
+    linear-gradient(#646464 0 0) 5px 21px / 20px 3px no-repeat,
+    #2f3540;
+}
+
+.launcher-demo .icon-grass {
+  background:
+    linear-gradient(#52a535 0 0) 0 0 / 30px 9px no-repeat,
+    linear-gradient(#3c8527 0 0) 0 9px / 30px 3px no-repeat,
+    #7a5233;
+}
+
+.launcher-demo .icon-dirt {
+  background:
+    linear-gradient(#5c3d24 0 0) 6px 6px / 6px 6px no-repeat,
+    linear-gradient(#5c3d24 0 0) 18px 18px / 6px 6px no-repeat,
+    #7a5233;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .launcher-demo .new,
-  .launcher-demo .new em {
+  .launcher-demo .choices {
     transition: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .launcher-demo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .launcher-demo .launcher-side {
+    display: none;
+  }
+
+  .launcher-demo .launcher-bar {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .launcher-demo .launcher-status {
+    display: none;
+  }
+
+  .launcher-demo .launcher-play {
+    padding: 12px 22px;
   }
 }
 
@@ -2721,4 +2749,38 @@ a[data-kind="cmd"]::before,
   margin: 0;
   border: 0;
   overflow-x: auto;
+}
+
+/* On a phone the site's name stays; the GitHub link moves to the footer. */
+@media (max-width: 560px) {
+  .site-header {
+    gap: 6px;
+  }
+
+  .site-label {
+    margin-left: -4px;
+    padding-left: 8px;
+    font-size: 14px;
+  }
+
+  .site-header .repo {
+    display: none;
+  }
+}
+
+.footer-links {
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+@media (max-width: 560px) {
+  .site-footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .footer-links {
+    gap: 12px;
+  }
 }

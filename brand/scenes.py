@@ -1,4 +1,4 @@
-"""Make each site's banner scene from the home page's, with its own sky and prop.
+"""Make the command line's and the library's banner scenes from the home page's.
 
 Run it from the repository's root:
 
@@ -7,20 +7,29 @@ Run it from the repository's root:
 It reads ``site/assets/hero.svg`` and ``hero-small.svg`` and writes
 ``hero-cli*.svg`` and ``hero-library*.svg`` beside them. Copy those into the
 command line's and the library's ``docs/assets``.
+
+The scenes keep the home page's pixel style, ground and anvil, and change the
+rest: the command line's world is drawn in a terminal's green, with a command
+typing itself across the sky; the library's is sunrise, with a house being
+built block by block.
 """
 
 import re
+from collections.abc import Callable
 from pathlib import Path
 
 ASSETS = Path(__file__).parent.parent / "site" / "assets"
-SKY = re.compile(r'(<linearGradient id="sky".*?</linearGradient>)', re.S)
-STYLE_END = "</style>"
+SKY = re.compile(r'<linearGradient id="sky".*?</linearGradient>', re.S)
+GLOW = re.compile(r'<radialGradient id="glow">.*?</radialGradient>', re.S)
+FILL = re.compile(r'fill="#([0-9a-fA-F]{6})"')
 STAR = re.compile(r'(<rect [^>]*fill="#ffffff" opacity=")([\d.]+)(")')
 
-PIXEL = 6  # One block of the props, in scene units.
+
+def rect(x: float, y: float, w: float, h: float, fill: str, extra: str = "") -> str:
+    return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{fill}"{extra}/>'
 
 
-def sky(top: str, middle: str, bottom: str) -> str:
+def gradient(top: str, middle: str, bottom: str) -> str:
     return (
         '<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">'
         f'<stop offset="0" stop-color="{top}"/>'
@@ -30,112 +39,183 @@ def sky(top: str, middle: str, bottom: str) -> str:
     )
 
 
-def rect(x: float, y: float, w: float, h: float, fill: str, extra: str = "") -> str:
-    return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{fill}"{extra}/>'
+def glow(colour: str, opacity: float) -> str:
+    return (
+        '<radialGradient id="glow">'
+        f'<stop offset="0" stop-color="{colour}" stop-opacity="{opacity}"/>'
+        f'<stop offset="1" stop-color="{colour}" stop-opacity="0"/>'
+        "</radialGradient>"
+    )
 
 
-def terminal(x: int, y: int) -> str:
-    """A floating terminal window whose lines type themselves in a loop."""
-    w, h = 264, 168
-    parts = [
-        rect(x - PIXEL, y - PIXEL, w + 2 * PIXEL, h + 2 * PIXEL, "#1c1c20"),
-        rect(x, y, w, h, "#0f1115"),
-        rect(x, y, w, 24, "#22252b"),
-    ]
-    parts += [rect(x + 12 + i * 18, y + 9, PIXEL, PIXEL, "#3a3f48") for i in range(3)]
-    lines = [
-        # (indent, width, colour) of each line, as blocks of text.
-        [(0, 12, "#6cc349"), (18, 150, "#d9dde3")],
-        [(0, 120, "#8a909a")],
-        [(12, 12, "#6cc349"), (30, 132, "#8a909a")],
-        [(12, 12, "#6cc349"), (30, 102, "#8a909a")],
-        [(0, 168, "#ffffff")],
-    ]
-    for row, blocks in enumerate(lines):
-        top = y + 42 + row * 22
-        cells = "".join(rect(x + 18 + dx, top, bw, PIXEL * 2, colour) for dx, bw, colour in blocks)
-        parts.append(f'<g class="line" style="animation-delay:{row * 0.45}s">{cells}</g>')
-    parts.append(f'<g class="cursor">{rect(x + 18, y + 42 + len(lines) * 22, 12, PIXEL * 2, "#d9dde3")}</g>')
-    # Drawn at a small size, then scaled about its corner; the float moves the outer group.
-    scaled = f'<g transform="translate({x} {y}) scale(1.3) translate({-x} {-y})">{"".join(parts)}</g>'
-    return f'<g class="float">{scaled}</g>'
+# The command line: everything in a terminal's green.
+
+PHOSPHOR = [
+    "#040a06", "#08160c", "#0c2413", "#11351b", "#174a25",
+    "#1f6430", "#2c823d", "#3fa64f", "#62c96f", "#a6efae",
+]
 
 
-BLOCKS = {
-    # Each block is 8 by 8 pixels: a top colour band, and a body with speckles.
-    "grass": ("#52a535", "#3c8527", "#7a5233", "#5c3d24"),
-    "stone": ("#8e8e8e", "#7a7a7a", "#8e8e8e", "#6a6a6a"),
-    "planks": ("#c69a5b", "#a87c42", "#c69a5b", "#9a6f39"),
+def phosphor(hex_colour: str) -> str:
+    """Map a colour to the green of the same brightness."""
+    r, g, b = (int(hex_colour[i : i + 2], 16) for i in (0, 2, 4))
+    light = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255
+    return PHOSPHOR[min(len(PHOSPHOR) - 1, round(light ** 0.75 * (len(PHOSPHOR) - 1) * 1.25))]
+
+
+# A 5 by 7 pixel font, for the few letters the command needs.
+GLYPHS = {
+    "$": ["..#..", ".####", "#.#..", ".###.", "..#.#", "####.", "..#.."],
+    " ": ["....."] * 7,
+    "m": [".....", ".....", "##.#.", "#.#.#", "#.#.#", "#.#.#", "#...#"],
+    "o": [".....", ".....", ".###.", "#...#", "#...#", "#...#", ".###."],
+    "d": ["....#", "....#", ".####", "#...#", "#...#", "#...#", ".####"],
+    "s": [".....", ".....", ".####", "#....", ".###.", "....#", "####."],
+    "i": ["..#..", ".....", ".##..", "..#..", "..#..", "..#..", ".###."],
+    "t": [".#...", ".#...", "####.", ".#...", ".#...", ".#..#", "..##."],
+    "h": ["#....", "#....", "#.##.", "##..#", "#...#", "#...#", "#...#"],
 }
 
 
-def block(x: int, y: int, kind: str, delay: float) -> str:
-    """A floating Minecraft-style block, drawn pixel by pixel."""
-    top, top_dark, body, body_dark = BLOCKS[kind]
-    size = 9  # scene units per pixel
-    parts = [rect(x - 3, y - 3, 8 * size + 6, 8 * size + 6, "#1c1c20")]
-    for row in range(8):
-        for col in range(8):
-            band = row < 2 if kind == "grass" else False
-            speckle = (row * 3 + col * 5 + len(kind)) % 7 == 0
-            if kind == "planks" and row in (2, 5):
-                colour = body_dark
-            elif band:
-                colour = top_dark if speckle else top
-            else:
-                colour = body_dark if speckle else body
-            parts.append(rect(x + col * size, y + row * size, size, size, colour))
-    return f'<g class="float" style="animation-delay:{delay}s">{"".join(parts)}</g>'
+def typed_command(text: str, x: int, y: int, size: int) -> str:
+    """Draw a command in the pixel font; each letter appears in turn, in a loop."""
+    parts = []
+    for index, char in enumerate(text):
+        cells = "".join(
+            rect(x + index * 6 * size + col * size, y + row * size, size, size, "#a6efae")
+            for row, line in enumerate(GLYPHS[char])
+            for col, on in enumerate(line)
+            if on == "#"
+        )
+        parts.append(f'<g class="key" style="animation-delay:{0.4 + index * 0.18:.2f}s">{cells}</g>')
+    end = x + len(text) * 6 * size
+    parts.append(f'<g class="cursor">{rect(end, y, size * 5, size * 7, "#a6efae")}</g>')
+    # Lines of output that print after the command, as bars of text.
+    widths = [(0, 300, "#62c96f"), (2, 380, "#2c823d"), (2, 340, "#2c823d"), (0, 260, "#a6efae")]
+    for row, (indent, width, colour) in enumerate(widths):
+        top = y + 7 * size + 40 + row * 34
+        delay = 0.4 + len(text) * 0.18 + 0.5 + row * 0.35
+        parts.append(
+            f'<g class="key" style="animation-delay:{delay:.2f}s">'
+            f'{rect(x + indent * size * 6, top, width, size * 2, colour)}</g>'
+        )
+    return "".join(parts)
 
 
-ANIMATION = {
-    "cli": (
-        ".float{animation:bob 5s ease-in-out infinite alternate}"
-        "@keyframes bob{to{transform:translateY(-14px)}}"
-        ".line{opacity:0;animation:type 6s steps(1) infinite}"
-        "@keyframes type{0%{opacity:0}8%{opacity:1}85%{opacity:1}100%{opacity:0}}"
+# The moon's colours; the command line's sky has the command instead.
+MOON = re.compile(r'<rect [^>]*fill="#(?:dfe4ec|c3cad6)"[^>]*/>')
+
+
+def cli(text: str) -> str:
+    text = MOON.sub("", text)
+    text = SKY.sub(gradient("#020604", "#040b07", "#07140b"), text, count=1)
+    text = GLOW.sub(glow("#3fa64f", 0.28), text, count=1)
+    text = FILL.sub(lambda m: f'fill="{phosphor(m[1])}"', text)
+    text = text.replace(
+        "</defs>",
+        '<pattern id="scan" width="8" height="8" patternUnits="userSpaceOnUse">'
+        '<rect width="8" height="4" fill="#000000" opacity="0.22"/></pattern>'
+        '<radialGradient id="vignette" cx="0.6" cy="0.55" r="0.75">'
+        '<stop offset="0.55" stop-color="#000000" stop-opacity="0"/>'
+        '<stop offset="1" stop-color="#000000" stop-opacity="0.55"/></radialGradient>'
+        "</defs>",
+        1,
+    )
+    style = (
+        ".key{opacity:0;animation:key 9s steps(1) infinite}"
+        "@keyframes key{0%{opacity:0}2%{opacity:1}90%{opacity:1}94%{opacity:0}}"
         ".cursor{animation:blink 1s steps(1) infinite}"
         "@keyframes blink{50%{opacity:0}}"
-        "@media (prefers-reduced-motion:reduce){.float,.line,.cursor{animation:none;opacity:1}}"
-    ),
-    "library": (
-        ".float{animation:bob 4s ease-in-out infinite alternate}"
-        "@keyframes bob{to{transform:translateY(-18px)}}"
-        "@media (prefers-reduced-motion:reduce){.float{animation:none}}"
-    ),
-}
-VARIANTS = {
-    "cli": {
-        "label": "A terminal window floating beside an anvil at dusk",
-        "sky": sky("#140f22", "#2a1c33", "#4a2a30"),
-        "stars": 0.6,
-        "props": lambda: terminal(1540, 150),
-    },
-    "library": {
-        "label": "Blocks floating beside an anvil at twilight",
-        "sky": sky("#0a1222", "#0f2138", "#173349"),
-        "stars": 1.0,
-        "props": lambda: (
-            block(1640, 200, "grass", 0)
-            + block(1790, 330, "stone", 1.3)
-            + block(1110, 250, "planks", 2.6)
-        ),
-    },
+        "@media (prefers-reduced-motion:reduce){.key{animation:none;opacity:1}.cursor{animation:none}}"
+    )
+    text = text.replace("</style>", style + "</style>", 1)
+    overlay = (
+        typed_command("$ modsmith", 1180, 150, 10)
+        + rect(0, 0, 1920, 1080, "url(#scan)")
+        + rect(0, 0, 1920, 1080, "url(#vignette)")
+    )
+    return text.replace("</svg>", overlay + "</svg>", 1)
+
+
+# The library: sunrise, and a house going up block by block.
+
+BLOCK = 30
+STONE, PLANKS, LOG, GLASS, ROOF, DOOR = (
+    "#8e8e8e", "#c69a5b", "#6b4a2b", "#9fd3e6", "#7a3b2e", "#5c3d24",
+)
+
+
+def house(x: int, ground: int) -> str:
+    """A small house, 5 blocks wide, whose blocks drop into place in order."""
+    layout = [
+        # Rows from the ground up; each letter is one block.
+        "SSSSS",
+        "LPDPL",
+        "LGDGL",
+        "LPPPL",
+        "RRRRRRR",
+        ".RRRRR.",
+        "..RRR..",
+    ]
+    colours = {"S": STONE, "P": PLANKS, "L": LOG, "G": GLASS, "D": DOOR, "R": ROOF}
+    parts = []
+    order = 0
+    for row, line in enumerate(layout):
+        offset = (len(line) - 5) // 2
+        for col, key in enumerate(line):
+            if key == ".":
+                continue
+            bx = x + (col - offset) * BLOCK
+            by = ground - (row + 1) * BLOCK
+            edge = rect(bx, by, BLOCK, BLOCK, "#1c1c20")
+            face = rect(bx + 2, by + 2, BLOCK - 4, BLOCK - 4, colours[key])
+            shine = rect(bx + 2, by + 2, BLOCK - 4, 4, "#ffffff", ' opacity="0.18"')
+            parts.append(
+                f'<g class="place" style="animation-delay:{0.3 + order * 0.2:.2f}s">{edge}{face}{shine}</g>'
+            )
+            order += 1
+    return "".join(parts)
+
+
+def floating(x: int, y: int, colour: str, delay: float) -> str:
+    cells = rect(x, y, BLOCK, BLOCK, "#1c1c20") + rect(x + 2, y + 2, BLOCK - 4, BLOCK - 4, colour)
+    return f'<g class="drift" style="animation-delay:{delay}s">{cells}</g>'
+
+
+def library(text: str) -> str:
+    text = SKY.sub(gradient("#1b2547", "#7a4f73", "#e8925a"), text, count=1)
+    text = GLOW.sub(glow("#ffb45e", 0.38), text, count=1)
+    # The moon becomes the rising sun.
+    text = text.replace('fill="#dfe4ec"', 'fill="#ffd89a"').replace('fill="#c3cad6"', 'fill="#ffc46b"')
+    text = STAR.sub(lambda m: f"{m[1]}{float(m[2]) * 0.3:.2f}{m[3]}", text)
+    style = (
+        ".place{opacity:0;animation:place 11s ease-out infinite}"
+        "@keyframes place{0%{opacity:0;transform:translateY(-60px)}5%{opacity:1;transform:none}"
+        "88%{opacity:1;transform:none}96%{opacity:0;transform:none}100%{opacity:0}}"
+        ".drift{animation:drift 4s ease-in-out infinite alternate}"
+        "@keyframes drift{to{transform:translateY(-16px)}}"
+        "@media (prefers-reduced-motion:reduce){.place{animation:none;opacity:1}.drift{animation:none}}"
+    )
+    text = text.replace("</style>", style + "</style>", 1)
+    overlay = (
+        house(1620, 870)
+        + floating(1700, 520, PLANKS, 0)
+        + floating(1780, 470, STONE, 1.2)
+        + floating(1600, 470, GLASS, 2.4)
+    )
+    return text.replace("</svg>", overlay + "</svg>", 1)
+
+
+VARIANTS: dict[str, tuple[str, Callable[[str], str]]] = {
+    "cli": ("A terminal's green world, with a command typing itself above an anvil", cli),
+    "library": ("A house being built block by block beside an anvil at sunrise", library),
 }
 
 
 def make(source: Path, name: str) -> Path:
-    variant = VARIANTS[name]
-    text = source.read_text(encoding="utf-8")
-    text, count = SKY.subn(variant["sky"], text, count=1)
-    assert count == 1, f"{source} has no sky gradient"
-    text = re.sub(r'aria-label="[^"]*"', f'aria-label="{variant["label"]}"', text, count=1)
-    text = text.replace(STYLE_END, ANIMATION[name] + STYLE_END, 1)
-    scale = variant["stars"]
-    text = STAR.sub(lambda m: f"{m[1]}{float(m[2]) * scale:.2f}{m[3]}", text)
-    # Props go above the sky and stars, and behind the glow, anvil and ground.
-    glow = text.index("<circle")
-    text = text[:glow] + variant["props"]() + text[glow:]
+    label, build = VARIANTS[name]
+    text = build(source.read_text(encoding="utf-8"))
+    text = re.sub(r'aria-label="[^"]*"', f'aria-label="{label}"', text, count=1)
     out = source.with_name(source.name.replace("hero", f"hero-{name}"))
     out.write_text(text, encoding="utf-8", newline="\n")
     return out
