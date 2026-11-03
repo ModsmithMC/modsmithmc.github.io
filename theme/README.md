@@ -37,5 +37,10 @@ html_theme_options = {
 | `sites` | `[title, url, note]` for each of Modsmith's sites, linked from the footer |
 | `moved` | `[old, new]` path prefixes, such as `["/modsmith/", "/modsmith-cli/"]`. The 404 page sends a missing page under `old` to the same page under `new` |
 
+The theme brings the fonts, the logo, the icons it draws itself (notes, tips
+and warnings, in `pixel/`, from Pixelarticons under the MIT licence) and the
+launcher drawing's banner, so a site needs none of them in its own static
+files.
+
 Each folder listed in `modsmith_sections` becomes a header entry with its own
 sidebar, built from the toctree caption of the same title.
