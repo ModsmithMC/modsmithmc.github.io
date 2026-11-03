@@ -17,6 +17,7 @@ onto the anvil and a new tool rising from it.
 """
 
 import re
+from collections import Counter
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -128,12 +129,61 @@ def typed_command(text: str, x: int, y: int, size: int) -> str:
 # The moon's colours; the command line's sky has the command instead.
 MOON = re.compile(r'<rect [^>]*fill="#(?:dfe4ec|c3cad6)"[^>]*/>')
 
+# Trees: leaves in two greens over a trunk of the same brown as the dirt.
+TILE = re.compile(
+    r'<rect x="([\d.]+)" y="([\d.]+)" width="([\d.]+)" height="[\d.]+" fill="#([0-9a-f]{6})"/>'
+)
+TRUNK, LEAVES = "3d2919", ("2a641c", "3c8527")
+
+
+def tiles(text: str) -> dict[tuple[float, float], set[str]]:
+    """The colours drawn at each tile of the scene."""
+    cells: dict[tuple[float, float], set[str]] = {}
+    for m in TILE.finditer(text):
+        cells.setdefault((float(m[1]), float(m[2])), set()).add(m[4])
+    return cells
+
+
+def trunks(text: str) -> set[tuple[float, float]]:
+    """Find the trunk tiles: brown columns that start among leaves."""
+    cells = tiles(text)
+    # The size most tiles have; a few larger shapes are drawn as rects too.
+    size = float(Counter(m[3] for m in TILE.finditer(text)).most_common(1)[0][0])
+    found = set()
+    for (x, y), colours in cells.items():
+        beside = cells.get((x - size, y), set()) | cells.get((x + size, y), set())
+        if TRUNK not in colours or LEAVES[0] not in beside:
+            continue
+        while TRUNK in cells.get((x, y), set()) and not (
+            TRUNK in cells.get((x - size, y), set())
+            or TRUNK in cells.get((x + size, y), set())
+        ):
+            found.add((x, y))
+            y += size
+    return found
+
+
+def recolour_tiles(
+    text: str, where: set[tuple[float, float]], old: str, new: str
+) -> str:
+    """Give the tiles at these places a new colour where they have the old one."""
+
+    def swap(m: re.Match[str]) -> str:
+        here = (float(m[1]), float(m[2]))
+        return m[0].replace(f"#{old}", new) if here in where and m[4] == old else m[0]
+
+    return TILE.sub(swap, text)
+
 
 def cli(text: str, prompt: tuple[int, int, int] = (1180, 150, 10)) -> str:
     text = MOON.sub("", text)
     text = SKY.sub(gradient("#020604", "#040b07", "#07140b"), text, count=1)
     text = GLOW.sub(glow("#3fa64f", 0.28), text, count=1)
+    # In green, the trunks' brown is as dark as the hills behind them, so they
+    # get a green of their own.
+    text = recolour_tiles(text, trunks(text), TRUNK, "trunk")
     text = FILL.sub(lambda m: f'fill="{phosphor(m[1])}"', text)
+    text = text.replace('fill="trunk"', 'fill="#1f6430"')
     text = text.replace(
         "</defs>",
         '<pattern id="scan" width="8" height="8" patternUnits="userSpaceOnUse">'
@@ -378,8 +428,20 @@ def text_path(font: str, text: str, size: float, left: float, baseline: float) -
     return pen.getCommands()
 
 
+def without_left_trees(text: str) -> str:
+    """Take out the two trees on the left, where the name and tagline go."""
+    tree = (TRUNK, *LEAVES)
+
+    def keep(m: re.Match[str]) -> str:
+        behind_text = float(m[1]) < 600 and float(m[2]) < 840
+        return "" if behind_text and m[4] in tree else m[0]
+
+    return TILE.sub(keep, text)
+
+
 def make_banner(banner: Banner) -> list[Path]:
-    text = banner.scene((ASSETS / "hero.svg").read_text(encoding="utf-8"))
+    hero = (ASSETS / "hero.svg").read_text(encoding="utf-8")
+    text = banner.scene(without_left_trees(hero))
     words = (
         f'<path fill="{banner.name_colour}" '
         f'd="{text_path("chakra-petch-700.woff2", "Modsmith", 168, 130.92, 660)}"/>'
