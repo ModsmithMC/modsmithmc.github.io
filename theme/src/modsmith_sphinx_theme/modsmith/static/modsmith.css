@@ -187,6 +187,119 @@ svg {
   font: 12.5px var(--mono);
 }
 
+/* Which of Modsmith's sites this is, and the way to the others. */
+.site-switch {
+  position: relative;
+  margin-left: -8px;
+}
+
+.site-switch-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 6px 0 12px;
+  border: 0;
+  border-left: 1px solid var(--border);
+  background: none;
+  color: var(--text);
+  font: 600 15px var(--sans);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.site-switch-button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.site-switch-button:hover,
+.site-switch-button[aria-expanded="true"] {
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.site-switch-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 30;
+  display: grid;
+  min-width: 280px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 18%);
+}
+
+.site-switch-menu[hidden] {
+  display: none;
+}
+
+.site-switch-menu a {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  color: var(--text);
+}
+
+.site-switch-menu a:hover {
+  background: var(--sunken);
+  text-decoration: none;
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.site-switch-menu a.current strong::after {
+  content: " \2713";
+  color: var(--accent);
+}
+
+.site-switch-menu span {
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+/* Tabs, such as one per operating system. */
+.tabs {
+  margin: 20px 0;
+}
+
+.tab-list {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab-list button {
+  padding: 8px 14px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: 500 14.5px var(--sans);
+  cursor: pointer;
+}
+
+.tab-list button:hover {
+  color: var(--text);
+}
+
+.tab-list button[aria-selected="true"] {
+  color: var(--text);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.tab-panel[hidden] {
+  display: none;
+}
+
+.tab-panel > :first-child {
+  margin-top: 12px;
+}
+
 .site-nav {
   display: flex;
   gap: 20px;
@@ -197,6 +310,7 @@ svg {
 
 .site-nav a {
   color: var(--muted);
+  white-space: nowrap;
 }
 
 .site-nav a:hover,
@@ -1514,6 +1628,18 @@ ul.search {
 
 /* Small screens */
 
+/* A full header fits only on wide screens; the version goes first. */
+@media (max-width: 1360px) {
+  .site-header .version {
+    display: none;
+  }
+
+  .site-nav {
+    gap: 14px;
+    margin-left: 0;
+  }
+}
+
 @media (max-width: 1100px) {
   .repo-text {
     display: none;
@@ -1564,6 +1690,7 @@ ul.search {
   }
 
   .site-nav,
+  .site-switch-button span,
   form.search kbd,
   .version,
   .repo-text {
@@ -2051,4 +2178,72 @@ a[data-kind="exc"]::before,
 .content dl.field-list > dd > ul > li > p:not(.field-row) {
   padding: 6px 0;
   font-size: 15px;
+}
+
+/* A docs home page: a numbered path for newcomers, then links by task. */
+.path {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 28px 0 8px;
+}
+
+.path a {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  padding: 18px 18px 18px 58px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.path a:hover {
+  text-decoration: none;
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.path b {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  display: grid;
+  width: 26px;
+  height: 26px;
+  background: var(--button);
+  color: #ffffff;
+  font-size: 14px;
+  place-items: center;
+}
+
+.path strong {
+  color: var(--text);
+}
+
+.path span {
+  font-size: 14.5px;
+}
+
+.task-groups {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin: 8px 0 24px;
+}
+
+.task-groups h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+
+.task-groups a {
+  display: block;
+  padding: 5px 0;
+}
+
+@media (max-width: 820px) {
+  .path,
+  .task-groups {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

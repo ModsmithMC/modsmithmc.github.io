@@ -1,0 +1,235 @@
+/* The home page, on top of the shared theme. */
+
+.hero-copy h1 {
+  max-width: 700px;
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(40px, 6vw, 72px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
+}
+
+.band-inner.single {
+  display: block;
+  max-width: 860px;
+}
+
+/* Install */
+
+.install-band .lede {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 17.5px;
+}
+
+.tabs.install {
+  margin: 28px 0 18px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.tabs.install .tab-list {
+  padding: 0 12px;
+  background: var(--sunken);
+}
+
+.tabs.install .tab-panel {
+  padding: 4px 20px 20px;
+}
+
+.install-steps {
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.install-steps li {
+  position: relative;
+  padding-left: 40px;
+  counter-increment: step;
+}
+
+.install-steps li::before {
+  position: absolute;
+  top: 16px;
+  left: 0;
+  display: grid;
+  width: 26px;
+  height: 26px;
+  background: var(--button);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  content: counter(step);
+  place-items: center;
+}
+
+.install-steps p {
+  margin: 16px 0 8px;
+}
+
+.install-steps div.highlight {
+  margin: 0;
+}
+
+.install-more {
+  color: var(--muted);
+}
+
+/* How it works */
+
+.band-inner.showcase {
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  align-items: start;
+}
+
+.showcase-media {
+  display: grid;
+  gap: 16px;
+  /* A grid item otherwise grows to its longest line and widens the page. */
+  min-width: 0;
+}
+
+.terminal {
+  border: 1px solid #22252b;
+  background: #0f1115;
+  color: #d9dde3;
+  box-shadow: 0 18px 40px rgb(0 0 0 / 22%);
+}
+
+.terminal-bar {
+  display: flex;
+  gap: 6px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #22252b;
+}
+
+.terminal-bar span {
+  width: 10px;
+  height: 10px;
+  background: #2b2f36;
+}
+
+.terminal pre {
+  min-height: 17.5em;
+  margin: 0;
+  padding: 14px 16px 18px;
+  overflow-x: auto;
+  border: 0;
+  background: none;
+  color: #d9dde3;
+  font: 12.5px/1.6 var(--mono);
+  white-space: pre;
+}
+
+.terminal .prompt {
+  color: #6cc349;
+}
+
+.terminal .add {
+  color: #6cc349;
+  font-weight: 400;
+}
+
+.terminal strong {
+  color: #ffffff;
+}
+
+.terminal .typed::after {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.1em;
+  margin-left: 1px;
+  background: #d9dde3;
+  vertical-align: text-bottom;
+  content: "";
+  animation: blink 1s steps(1) infinite;
+}
+
+.terminal.done .typed::after {
+  display: none;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.shot {
+  margin: 0;
+  border: 1px solid var(--border);
+  background: var(--sunken);
+}
+
+.shot.placeholder {
+  display: grid;
+  aspect-ratio: 16 / 9;
+  padding: 24px;
+  border-style: dashed;
+  color: var(--muted);
+  text-align: center;
+  place-items: center;
+}
+
+/* Safe to try */
+
+.promises {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  text-align: left;
+}
+
+.promises > div {
+  padding: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.promises h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+}
+
+.promises p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* Footer */
+
+.footer-links a:not(.footer-icon) {
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.footer-links {
+  align-items: center;
+  gap: 18px;
+}
+
+@media (max-width: 900px) {
+  .band-inner.showcase {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .promises {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .promises {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.band-copy a.more {
+  font-weight: 600;
+}

@@ -1,7 +1,8 @@
 {%- extends "basic/layout.html" -%}
 
 {%- block htmltitle %}
-<title>{% if pagename == master_doc %}{{ project }}{% else %}{{ title|striptags|e }} · {{ project }}{% endif %}</title>
+{%- set site_title = theme_site_title or project %}
+<title>{% if pagename == master_doc %}{{ site_title }}{% else %}{{ title|striptags|e }} · {{ site_title }}{% endif %}</title>
 {%- endblock %}
 
 {%- block extrahead %}
@@ -14,7 +15,7 @@
 <script defer src="{{ pathto('_static/modsmith.js', 1) }}"></script>
 {%- endblock %}
 
-{%- block body_tag %}<body class="{{ 'home' if pagename == master_doc else 'page' }}">{% endblock %}
+{%- block body_tag %}<body class="{{ 'home' if pagename == master_doc and theme_hero_home|tobool else 'page' }}">{% endblock %}
 
 {%- block relbar1 %}{% endblock %}
 {%- block relbar2 %}{% endblock %}
@@ -30,6 +31,19 @@
     <img src="{{ pathto('_static/logo.svg', 1) }}" alt="" width="26" height="26">
     <span>{{ project }}</span>
   </a>
+  {%- if theme_site_name %}
+  <div class="site-switch" data-switch>
+    <button class="site-switch-button" type="button" aria-haspopup="true" aria-expanded="false" data-switch-button>
+      <span>{{ theme_site_name }}</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+    </button>
+    <div class="site-switch-menu" role="menu" data-switch-menu hidden>
+      {%- for title, url, note in theme_sites %}
+      <a role="menuitem" href="{{ url }}"{% if title == theme_site_name %} class="current" aria-current="true"{% endif %}><strong>{{ title }}</strong><span>{{ note }}</span></a>
+      {%- endfor %}
+    </div>
+  </div>
+  {%- endif %}
   {%- if release %}
   <span class="version">v{{ release }}</span>
   {%- endif %}

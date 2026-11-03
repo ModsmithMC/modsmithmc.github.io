@@ -49,7 +49,69 @@
     }
   });
 
-  const languages = { python: "Python", bash: "Terminal", pycon: "Python" };
+  // The site switcher in the header.
+  const switcher = document.querySelector("[data-switch]");
+  const switchButton = switcher?.querySelector("[data-switch-button]");
+  const switchMenu = switcher?.querySelector("[data-switch-menu]");
+  const setSwitch = (open) => {
+    if (!switchMenu) return;
+    switchMenu.hidden = !open;
+    switchButton.setAttribute("aria-expanded", String(open));
+  };
+  switchButton?.addEventListener("click", () => setSwitch(switchMenu.hidden));
+  document.addEventListener("click", (event) => {
+    if (switcher && !switcher.contains(event.target)) setSwitch(false);
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && switchMenu && !switchMenu.hidden) {
+      setSwitch(false);
+      switchButton.focus();
+    }
+  });
+
+  // Tabs. Groups with the same choices switch together, and start on the
+  // reader's system the first time.
+  const system = /Windows/i.test(navigator.userAgent)
+    ? "windows"
+    : /Mac/i.test(navigator.userAgent)
+      ? "macos"
+      : "linux";
+  let chosen = system;
+  try {
+    chosen = localStorage.getItem("modsmith-tab") ?? system;
+  } catch (error) {}
+  const groups = [...document.querySelectorAll("[data-tabs]")];
+  const showTab = (name, remember) => {
+    groups.forEach((group) => {
+      const buttons = [...group.querySelectorAll("[data-tab]")];
+      if (!buttons.some((button) => button.dataset.tab === name)) return;
+      buttons.forEach((button) => button.setAttribute("aria-selected", String(button.dataset.tab === name)));
+      group.querySelectorAll("[data-panel]").forEach((panel) => (panel.hidden = panel.dataset.panel !== name));
+    });
+    if (remember) {
+      try {
+        localStorage.setItem("modsmith-tab", name);
+      } catch (error) {}
+    }
+  };
+  groups.forEach((group) =>
+    group.querySelectorAll("[data-tab]").forEach((button) =>
+      button.addEventListener("click", () => showTab(button.dataset.tab, true)),
+    ),
+  );
+  groups.forEach((group) => {
+    const first = group.querySelector("[data-tab]")?.dataset.tab;
+    const names = [...group.querySelectorAll("[data-tab]")].map((button) => button.dataset.tab);
+    showTab(names.includes(chosen) ? chosen : first, false);
+  });
+
+  const languages = {
+    python: "Python",
+    bash: "Terminal",
+    console: "Terminal",
+    powershell: "PowerShell",
+    pycon: "Python",
+  };
   document.querySelectorAll("div.highlight").forEach((block) => {
     const name = block.parentElement.className.match(/highlight-(\w+)/)?.[1];
     const bar = document.createElement("div");

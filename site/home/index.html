@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modsmith: modpacks for the official Minecraft launcher</title>
+<meta name="description" content="Install Minecraft modpacks, mods, resource packs and shaders from Modrinth and CurseForge into the official launcher. No account, nothing to launch.">
+<link rel="canonical" href="https://modsmithmc.org/">
+<link rel="icon" href="_static/logo.svg">
+<meta property="og:title" content="Modsmith">
+<meta property="og:description" content="Modpacks for the official Minecraft launcher.">
+<meta property="og:image" content="https://raw.githubusercontent.com/ModsmithMC/modsmithmc.github.io/main/brand/social-modsmith.png">
+<link rel="stylesheet" href="_static/modsmith.css">
+<link rel="stylesheet" href="_static/home.css">
+<script>
+  try {
+    var saved = localStorage.getItem("modsmith-theme");
+    if (saved) document.documentElement.dataset.theme = saved;
+  } catch (error) {}
+</script>
+<script defer src="_static/modsmith.js"></script>
+<script defer src="_static/home.js"></script>
+</head>
+<body class="home">
+
+<header class="site-header">
+  <a class="brand" href="./">
+    <img src="_static/logo.svg" alt="" width="26" height="26">
+    <span>Modsmith</span>
+  </a>
+  <nav class="site-nav" aria-label="Main">
+    <a href="#install">Install</a>
+    <a href="https://modsmithmc.org/modsmith/">Guide</a>
+    <a href="https://modsmithmc.org/modsmith-python/">Python library</a>
+  </nav>
+  <a class="repo" href="https://github.com/ModsmithMC/modsmith" aria-label="Modsmith on GitHub" data-repo="ModsmithMC/modsmith">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+    <span class="repo-text">
+      <span class="repo-name" data-repo-name>ModsmithMC/modsmith</span>
+      <span class="repo-facts" data-repo-facts></span>
+    </span>
+  </a>
+  <button class="icon-button" type="button" aria-label="Switch between light and dark" data-theme-toggle>
+    <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></svg>
+    <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+  </button>
+</header>
+
+<main>
+
+<div class="hero">
+  <picture>
+    <source media="(max-width: 560px)" srcset="_static/hero-small.svg">
+    <img src="_static/hero.svg" alt="">
+  </picture>
+  <div class="hero-copy">
+    <h1>Modpacks, ready in the official launcher</h1>
+    <p>Modsmith installs modpacks, mods, resource packs and shaders from Modrinth and CurseForge, and adds them to the official Minecraft launcher. You choose the installation there, and play.</p>
+    <div class="actions">
+      <a class="button primary" href="#install">Install Modsmith</a>
+      <a class="button" href="#how">See how it works</a>
+    </div>
+  </div>
+</div>
+
+<section class="band install-band" id="install">
+  <div class="band-inner single">
+    <p class="eyebrow">Install</p>
+    <h2>Two commands, and you are set</h2>
+    <p class="lede">Modsmith runs in a terminal today, on Windows, macOS and Linux. A desktop app is on its way.</p>
+
+    <div class="tabs install" data-tabs>
+      <div class="tab-list" role="tablist">
+        <button type="button" role="tab" data-tab="windows">Windows</button>
+        <button type="button" role="tab" data-tab="macos">macOS</button>
+        <button type="button" role="tab" data-tab="linux">Linux</button>
+      </div>
+      <div class="tab-panel" role="tabpanel" data-panel="windows">
+        <ol class="install-steps">
+          <li><p><strong>Install uv</strong>, which brings the Python that Modsmith needs. In PowerShell:</p>
+            <div class="highlight-powershell notranslate"><div class="highlight"><pre>powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"</pre></div></div></li>
+          <li><p><strong>Install Modsmith</strong>, in a new PowerShell window:</p>
+            <div class="highlight-powershell notranslate"><div class="highlight"><pre>uv tool install modsmith-cli</pre></div></div></li>
+        </ol>
+      </div>
+      <div class="tab-panel" role="tabpanel" data-panel="macos" hidden>
+        <ol class="install-steps">
+          <li><p><strong>Install uv</strong>, which brings the Python that Modsmith needs. In Terminal:</p>
+            <div class="highlight-bash notranslate"><div class="highlight"><pre>curl -LsSf https://astral.sh/uv/install.sh | sh</pre></div></div></li>
+          <li><p><strong>Install Modsmith</strong>, in a new Terminal window:</p>
+            <div class="highlight-bash notranslate"><div class="highlight"><pre>uv tool install modsmith-cli</pre></div></div></li>
+        </ol>
+      </div>
+      <div class="tab-panel" role="tabpanel" data-panel="linux" hidden>
+        <ol class="install-steps">
+          <li><p><strong>Install uv</strong>, which brings the Python that Modsmith needs:</p>
+            <div class="highlight-bash notranslate"><div class="highlight"><pre>curl -LsSf https://astral.sh/uv/install.sh | sh</pre></div></div></li>
+          <li><p><strong>Install Modsmith</strong>, in a new terminal:</p>
+            <div class="highlight-bash notranslate"><div class="highlight"><pre>uv tool install modsmith-cli</pre></div></div></li>
+        </ol>
+      </div>
+    </div>
+    <p class="install-more">Then install your first modpack with <code>modsmith install fabulously-optimized</code>. Already have uv or pipx, or want to upgrade? See <a href="https://modsmithmc.org/modsmith/get-started/installation/">every way to install</a>.</p>
+  </div>
+</section>
+
+<section class="band alternate" id="how">
+  <div class="band-inner showcase">
+    <div class="band-copy">
+      <p class="eyebrow">How it works</p>
+      <h2>From a name to a game</h2>
+      <ol class="steps">
+        <li><strong>Install a pack</strong> Name a modpack from Modrinth or CurseForge, or give a file. Modsmith shows what it will add, and asks.</li>
+        <li><strong>Open the launcher</strong> The pack has its own installation, with its icon, Minecraft version and mod loader ready.</li>
+        <li><strong>Play</strong> Choose it and press Play. Your other installations stay as they were.</li>
+      </ol>
+    </div>
+    <div class="showcase-media">
+      <div class="terminal" data-terminal aria-label="Modsmith installing a modpack in a terminal">
+        <div class="terminal-bar"><span></span><span></span><span></span></div>
+<pre data-command="modsmith install fabulously-optimized --name survival"><span class="prompt">$ </span><span class="typed"></span>
+<span class="out">Install Fabulously Optimized 14.1.2 as survival
+  <b class="add">+</b> mods/BetterGrassify-1.8.7+fabric.26.2.jar
+  <b class="add">+</b> mods/ImmediatelyFast-Fabric-1.16.5+26.2.jar
+  <b class="add">+</b> mods/NoChatReports-FABRIC-26.2-v2.20.2.jar
+  <b class="add">+</b> mods/cloth-config-26.2.155.jar
+  <b class="add">+</b> and 98 more
+<strong>102 to add; 45.0 MB to download.</strong>
+Minecraft 26.2 with Fabric 0.20.1, and an installation in the official
+launcher.
+Install it? [Y/n]: y
+Installed Fabulously Optimized as survival. In the official launcher,
+choose the Fabulously Optimized installation and play.</span></pre>
+      </div>
+      <figure class="shot placeholder">
+        <div>Screenshot to come: the official launcher, with the Fabulously Optimized installation that Modsmith added.</div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="band center">
+  <div class="band-inner">
+    <p class="eyebrow">What it does</p>
+    <h2>Everything a modded game needs</h2>
+    <div class="features">
+      <div class="feature"><img src="_static/pixel/package.svg" alt=""><h3>Modpacks</h3><p>From Modrinth, CurseForge or a file, with the right Minecraft and mod loader.</p></div>
+      <div class="feature"><img src="_static/pixel/puzzle.svg" alt=""><h3>Mods, resource packs and shaders</h3><p>Add them to any pack, with the mods they need. Remove them as cleanly.</p></div>
+      <div class="feature"><img src="_static/pixel/refresh.svg" alt=""><h3>Updates that keep your changes</h3><p>Update the pack and what you added. Your settings and edits stay.</p></div>
+      <div class="feature"><img src="_static/pixel/link.svg" alt=""><h3>Bring your own</h3><p>Take over an installation you set up in the launcher, mods and all.</p></div>
+      <div class="feature"><img src="_static/pixel/layers.svg" alt=""><h3>Every major loader</h3><p>Forge, NeoForge, Fabric and Quilt, installed for you.</p></div>
+      <div class="feature"><img src="_static/pixel/download.svg" alt=""><h3>Blocked downloads</h3><p>CurseForge files you must fetch by hand are found and checked.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band alternate center">
+  <div class="band-inner">
+    <p class="eyebrow">Safe to try</p>
+    <h2>It stays out of your way</h2>
+    <div class="promises">
+      <div><h3>No account</h3><p>Modsmith never signs in, and never starts the game. The official launcher does both, as it always has.</p></div>
+      <div><h3>You see it first</h3><p>Every change is listed before it happens, and waits for your yes.</p></div>
+      <div><h3>Nothing half done</h3><p>A failed install or update leaves everything as it was.</p></div>
+      <div><h3>Open source</h3><p>Free, under the MIT license, with every line <a href="https://github.com/ModsmithMC/modsmith">on GitHub</a>.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band flip">
+  <div class="band-inner">
+    <div class="band-copy">
+      <p class="eyebrow">For developers</p>
+      <h2>Build your own tools</h2>
+      <p>Everything Modsmith does comes from its Python library. Use it to write your own installer, updater or launcher helper.</p>
+      <p><a class="more" href="https://modsmithmc.org/modsmith-python/">Read the library's guide &rarr;</a></p>
+    </div>
+    <div class="highlight-python notranslate"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">modsmith</span> <span class="k">as</span> <span class="nn">ms</span>
+
+<span class="k">with</span> <span class="nn">ms</span>.<span class="nn">platforms</span>.<span class="nc">Modrinth</span>(<span class="s2">"my-tool/1.0"</span>) <span class="k">as</span> modrinth:
+    project = modrinth.<span class="nf">get_project</span>(<span class="s2">"fabulously-optimized"</span>)
+    release = <span class="nb">next</span>(modrinth.<span class="nf">iter_releases</span>(project))
+    <span class="nb">print</span>(release.name)</pre></div></div>
+  </div>
+</section>
+
+<section class="band center closing">
+  <div class="band-inner">
+    <h2>Ready to play?</h2>
+    <p class="lede">Install Modsmith, then install your first modpack.</p>
+    <div class="actions">
+      <a class="button primary" href="#install">Install Modsmith</a>
+      <a class="button" href="https://modsmithmc.org/modsmith/get-started/quickstart/">Read the quick start</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <p>Copyright &copy; 2026 MeNeither<br><span>Released under the MIT License.</span></p>
+    <div class="footer-links">
+      <a href="https://modsmithmc.org/modsmith/">Guide</a>
+      <a href="https://modsmithmc.org/modsmith-python/">Python library</a>
+      <a class="footer-icon" href="https://github.com/ModsmithMC" aria-label="ModsmithMC on GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
