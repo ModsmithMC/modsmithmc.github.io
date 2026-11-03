@@ -239,4 +239,76 @@
     } catch (error) {}
   };
   if (repo && repoName && facts) load();
+
+  // Terminals type their command and show its output, over and over, while
+  // they are on screen. A launcher drawing that follows a terminal shows the
+  // installation it made. Readers who prefer less motion see the end at once.
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  document.querySelectorAll("[data-terminal]").forEach((terminal) => {
+    const pre = terminal.querySelector("pre[data-command]");
+    const typed = terminal.querySelector(".typed");
+    const output = terminal.querySelector(".out");
+    if (!pre || !typed || !output) return;
+    const command = pre.dataset.command;
+    const lines = output.innerHTML.split("\n");
+    const launcher = terminal.id
+      ? document.querySelector(`[data-follows="${terminal.id}"]`)
+      : null;
+    const status = launcher?.querySelector("[data-status]");
+    const setLauncher = (state, text) => {
+      if (!launcher) return;
+      launcher.classList.toggle("added", state !== "empty");
+      launcher.classList.toggle("playing", state === "playing");
+      if (status) status.textContent = text;
+    };
+    if (still) {
+      typed.textContent = command;
+      output.innerHTML = lines.join("\n");
+      terminal.classList.add("done");
+      setLauncher("added", "");
+      return;
+    }
+    let visible = false;
+    let running = false;
+    const play = async () => {
+      running = true;
+      while (visible) {
+        terminal.classList.remove("done", "clearing");
+        setLauncher("empty", "");
+        typed.textContent = "";
+        output.innerHTML = "";
+        await sleep(500);
+        for (let i = 1; i <= command.length; i += 1) {
+          typed.textContent = command.slice(0, i);
+          await sleep(38);
+        }
+        await sleep(450);
+        for (let i = 0; i < lines.length; i += 1) {
+          output.innerHTML = lines.slice(0, i + 1).join("\n");
+          // A question waits a moment for its answer, as a player would.
+          await sleep(/\[Y\/n\]/.test(lines[i]) ? 900 : 110);
+        }
+        terminal.classList.add("done");
+        if (launcher) {
+          await sleep(500);
+          setLauncher("added", "A new installation, ready to play.");
+          await sleep(1800);
+          setLauncher("playing", "Starting Minecraft...");
+          await sleep(1600);
+        }
+        await sleep(3500);
+        terminal.classList.add("clearing");
+        await sleep(500);
+      }
+      running = false;
+    };
+    new IntersectionObserver(
+      (entries) => {
+        visible = entries.some((entry) => entry.isIntersecting);
+        if (visible && !running) play();
+      },
+      { threshold: 0.3 },
+    ).observe(terminal);
+  });
 })();

@@ -2326,3 +2326,399 @@ a[data-kind="cmd"]::before,
     display: none;
   }
 }
+
+/* An animated terminal, for showing commands at work. */
+.terminal {
+  border: 1px solid #22252b;
+  background: #0f1115;
+  color: #d9dde3;
+  box-shadow: 0 18px 40px rgb(0 0 0 / 22%);
+}
+
+.terminal-bar {
+  display: flex;
+  gap: 6px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #22252b;
+}
+
+.terminal-bar span {
+  width: 10px;
+  height: 10px;
+  background: #2b2f36;
+}
+
+.terminal pre {
+  min-height: 17.5em;
+  margin: 0;
+  padding: 14px 16px 18px;
+  overflow-x: auto;
+  border: 0;
+  background: none;
+  color: #d9dde3;
+  font: 12.5px/1.6 var(--mono);
+  white-space: pre;
+}
+
+.terminal .prompt {
+  color: #6cc349;
+}
+
+.terminal .add {
+  color: #6cc349;
+  font-weight: 400;
+}
+
+.terminal strong {
+  color: #ffffff;
+}
+
+.terminal .typed::after {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.1em;
+  margin-left: 1px;
+  background: #d9dde3;
+  vertical-align: text-bottom;
+  content: "";
+  animation: blink 1s steps(1) infinite;
+}
+
+.terminal.done .typed::after {
+  display: none;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.terminal .change {
+  color: #4fb3d9;
+  font-weight: 400;
+}
+
+.terminal .remove {
+  color: #e8705a;
+  font-weight: 400;
+}
+
+.terminal .keep,
+.terminal .note {
+  color: #e2b84a;
+  font-weight: 400;
+}
+
+.terminal .dim {
+  color: #8a909a;
+}
+
+.terminal .out {
+  transition: opacity 0.4s;
+}
+
+.terminal.clearing .out,
+.terminal.clearing .typed {
+  opacity: 0;
+}
+
+/* A drawing of a launcher's installation list, which plays along with a terminal. */
+.launcher-demo {
+  border: 1px solid #22252b;
+  background: #16181c;
+  color: #e4e5e9;
+  font: 14px/1.4 var(--sans);
+  box-shadow: 0 18px 40px rgb(0 0 0 / 22%);
+}
+
+.launcher-demo .launcher-bar {
+  padding: 8px 14px;
+  border-bottom: 1px solid #22252b;
+  color: #8a909a;
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.launcher-demo .launcher-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: end;
+  padding: 14px;
+}
+
+.launcher-demo ul {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.launcher-demo li {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  gap: 2px 10px;
+  align-items: center;
+  padding: 7px 10px;
+  border: 1px solid transparent;
+  background: #1e2126;
+}
+
+.launcher-demo li > i {
+  grid-row: span 2;
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+}
+
+.launcher-demo li b {
+  font-weight: 600;
+}
+
+.launcher-demo li small {
+  color: #8a909a;
+  font: 12px var(--mono);
+}
+
+.launcher-demo li em {
+  grid-row: span 2;
+  padding: 2px 8px;
+  background: #3c8527;
+  color: #ffffff;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  opacity: 0;
+}
+
+/* Pixel icons, drawn with gradients so the drawing needs no images. */
+.launcher-demo .icon-pack {
+  background:
+    linear-gradient(#ffd27a 0 0) 10px 6px / 12px 4px no-repeat,
+    linear-gradient(#ff9a2e 0 0) 10px 10px / 12px 2px no-repeat,
+    linear-gradient(#b8b8b8 0 0) 4px 12px / 24px 4px no-repeat,
+    linear-gradient(#8e8e8e 0 0) 10px 16px / 12px 8px no-repeat,
+    linear-gradient(#646464 0 0) 6px 24px / 20px 4px no-repeat,
+    #2a2f38;
+}
+
+.launcher-demo .icon-grass {
+  background:
+    linear-gradient(#52a535 0 0) 0 0 / 32px 10px no-repeat,
+    linear-gradient(#3c8527 0 0) 0 10px / 32px 2px no-repeat,
+    #7a5233;
+}
+
+.launcher-demo .icon-dirt {
+  background:
+    linear-gradient(#5c3d24 0 0) 6px 6px / 6px 6px no-repeat,
+    linear-gradient(#5c3d24 0 0) 20px 18px / 6px 6px no-repeat,
+    #7a5233;
+}
+
+.launcher-demo .launcher-play {
+  min-width: 112px;
+  padding: 12px 18px;
+  border: 0;
+  background: #3c8527;
+  box-shadow: inset 0 -4px 0 #2a641c, inset 0 2px 0 #52a535;
+  color: #ffffff;
+  font: 700 16px var(--sans);
+  cursor: default;
+}
+
+/* The new installation is hidden until the terminal has made it. */
+.launcher-demo .new {
+  max-height: 0;
+  padding-block: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.5s, padding 0.5s, opacity 0.5s, border-color 0.5s;
+}
+
+.launcher-demo.added .new {
+  max-height: 60px;
+  padding-block: 7px;
+  border-color: #3c8527;
+  opacity: 1;
+}
+
+.launcher-demo.added .new em {
+  opacity: 1;
+  transition: opacity 0.4s 0.4s;
+}
+
+.launcher-demo.playing .launcher-play {
+  background: #52a535;
+  transform: translateY(2px);
+  box-shadow: inset 0 -2px 0 #2a641c;
+}
+
+.launcher-demo .launcher-status {
+  grid-column: 1 / -1;
+  min-height: 1.4em;
+  color: #8a909a;
+  font-size: 13px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .launcher-demo .new,
+  .launcher-demo .new em {
+    transition: none;
+  }
+}
+
+/* Install steps and a showcase of commands, for home pages. */
+/* Install */
+
+.install-band .lede {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 17.5px;
+}
+
+.tabs.install {
+  margin: 28px 0 18px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.tabs.install .tab-list {
+  padding: 0 12px;
+  background: var(--sunken);
+}
+
+.tabs.install .tab-panel {
+  padding: 4px 20px 20px;
+}
+
+.install-steps {
+  display: grid;
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.install-steps li {
+  position: relative;
+  padding-left: 40px;
+  counter-increment: step;
+}
+
+.install-steps li::before {
+  position: absolute;
+  top: 16px;
+  left: 0;
+  display: grid;
+  width: 26px;
+  height: 26px;
+  background: var(--button);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  content: counter(step);
+  place-items: center;
+}
+
+.install-steps p {
+  margin: 16px 0 8px;
+}
+
+.install-steps div.highlight {
+  margin: 0;
+}
+
+.install-more {
+  color: var(--muted);
+}
+
+/* How it works */
+
+.band-inner.showcase {
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  align-items: start;
+}
+
+.showcase-media {
+  display: grid;
+  gap: 16px;
+  /* A grid item otherwise grows to its longest line and widens the page. */
+  min-width: 0;
+}
+
+/* Grid items shrink with the page instead of growing to their longest line. */
+.band-inner > *,
+.install-steps li {
+  min-width: 0;
+}
+
+.install-steps {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.lede-left {
+  margin: 0;
+  color: var(--muted);
+  font-size: 17.5px;
+}
+
+@media (max-width: 900px) {
+  .band-inner.showcase {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Command output: the marks of a plan, its summary, and errors. */
+.highlight .gi {
+  color: var(--token-string);
+}
+
+.highlight .gu {
+  color: var(--token-operator);
+}
+
+.highlight .gd,
+.highlight .gr {
+  color: var(--token-number);
+}
+
+.highlight .gs {
+  color: var(--panel-text);
+  font-weight: 700;
+}
+
+/* A secondary button for light backgrounds, beside a primary one. */
+.button.light {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: inset 0 -3px 0 var(--sunken);
+  color: var(--text);
+}
+
+.button.light:hover {
+  box-shadow: inset 0 -3px 0 var(--accent);
+}
+
+.actions.centered {
+  justify-content: center;
+}
+
+/* Terminals and launcher drawings fit their column; long lines scroll inside. */
+.terminal,
+.launcher-demo,
+.showcase-media > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.content .terminal pre {
+  max-width: 100%;
+  margin: 0;
+  border: 0;
+  overflow-x: auto;
+}
