@@ -2,11 +2,13 @@
 
 Run it from the repository's root:
 
-    uv run --no-project python brand/scenes.py
+    uv run --no-project --with fonttools --with brotli python brand/scenes.py
 
 It reads ``site/assets/hero.svg`` and ``hero-small.svg`` and writes
-``hero-cli*.svg`` and ``hero-library*.svg`` beside them. Copy those into the
-command line's and the library's ``docs/assets``.
+``hero-cli*.svg`` and ``hero-library*.svg`` beside them, a README banner for
+each site (``banner*.svg``), and the repositories' preview cards
+(``brand/social-*.svg``). Copy each site's hero and banner into the command
+line's and the library's ``docs/assets``, the banner as ``banner.svg``.
 
 The scenes keep the home page's pixel style, ground and anvil, and change the
 rest: the command line's world is drawn in a terminal's green, with a command
@@ -16,9 +18,11 @@ onto the anvil and a new tool rising from it.
 
 import re
 from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 
-ASSETS = Path(__file__).parent.parent / "site" / "assets"
+BRAND = Path(__file__).parent
+ASSETS = BRAND.parent / "site" / "assets"
 SKY = re.compile(r'<linearGradient id="sky".*?</linearGradient>', re.DOTALL)
 GLOW = re.compile(r'<radialGradient id="glow">.*?</radialGradient>', re.DOTALL)
 FILL = re.compile(r'fill="#([0-9a-fA-F]{6})"')
@@ -125,7 +129,7 @@ def typed_command(text: str, x: int, y: int, size: int) -> str:
 MOON = re.compile(r'<rect [^>]*fill="#(?:dfe4ec|c3cad6)"[^>]*/>')
 
 
-def cli(text: str) -> str:
+def cli(text: str, prompt: tuple[int, int, int] = (1180, 150, 10)) -> str:
     text = MOON.sub("", text)
     text = SKY.sub(gradient("#020604", "#040b07", "#07140b"), text, count=1)
     text = GLOW.sub(glow("#3fa64f", 0.28), text, count=1)
@@ -149,7 +153,7 @@ def cli(text: str) -> str:
     )
     text = text.replace("</style>", style + "</style>", 1)
     overlay = (
-        typed_command("$ modsmith", 1180, 150, 10)
+        typed_command("$ modsmith", *prompt)
         + rect(0, 0, 1920, 1080, "url(#scan)")
         + rect(0, 0, 1920, 1080, "url(#vignette)")
     )
@@ -227,7 +231,7 @@ MATERIALS = [
 LOOP = 8  # seconds
 
 
-def forge_style() -> str:
+def forge_style(lift: int) -> str:
     """Keyframes for the materials, the flash, and the item that rises."""
     parts = []
     for name, (dx, dy), delay in MATERIALS:
@@ -246,22 +250,22 @@ def forge_style() -> str:
         "@keyframes flash{0%,31%{opacity:0}35%{opacity:.9}48%,100%{opacity:0}}"
         f".flash{{opacity:0;animation:flash {LOOP}s ease-out infinite}}"
         "@keyframes made{0%,34%{opacity:0;transform:translateY(0) scale(.4)}"
-        "44%{opacity:1;transform:translateY(-170px) scale(1)}"
-        "50%{transform:translateY(-195px) rotate(-8deg)}"
-        "62%{transform:translateY(-175px) rotate(4deg)}"
-        "74%{transform:translateY(-195px) rotate(-6deg)}"
-        "84%{opacity:1;transform:translateY(-180px)}"
-        "92%,100%{opacity:0;transform:translateY(-225px)}}"
+        f"44%{{opacity:1;transform:translateY(-{lift - 10}px) scale(1)}}"
+        f"50%{{transform:translateY(-{lift + 15}px) rotate(-8deg)}}"
+        f"62%{{transform:translateY(-{lift - 5}px) rotate(4deg)}}"
+        f"74%{{transform:translateY(-{lift + 15}px) rotate(-6deg)}}"
+        f"84%{{opacity:1;transform:translateY(-{lift}px)}}"
+        f"92%,100%{{opacity:0;transform:translateY(-{lift + 45}px)}}}}"
         f".made{{opacity:0;transform-box:fill-box;transform-origin:50% 100%;animation:made {LOOP}s ease-out infinite}}"
         "@media (prefers-reduced-motion:reduce){"
         + ",".join(f".in-{name}" for name, _, _ in MATERIALS)
         + ",.flash{animation:none;opacity:0}"
-        ".made{animation:none;opacity:1;transform:translateY(-180px)}}"
+        f".made{{animation:none;opacity:1;transform:translateY(-{lift}px)}}}}"
     )
     return "".join(parts)
 
 
-def library(text: str) -> str:
+def library(text: str, lift: int = 180) -> str:
     text = SKY.sub(gradient("#1b2547", "#7a4f73", "#e8925a"), text, count=1)
     text = GLOW.sub(glow("#ffb45e", 0.38), text, count=1)
     # The moon becomes the rising sun.
@@ -269,7 +273,7 @@ def library(text: str) -> str:
         'fill="#c3cad6"', 'fill="#ffc46b"'
     )
     text = STAR.sub(lambda m: f"{m[1]}{float(m[2]) * 0.3:.2f}{m[3]}", text)
-    text = text.replace("</style>", forge_style() + "</style>", 1)
+    text = text.replace("</style>", forge_style(lift) + "</style>", 1)
     flash = (
         '<radialGradient id="flash"><stop offset="0" stop-color="#fff2c4" stop-opacity="1"/>'
         '<stop offset="1" stop-color="#ffb45e" stop-opacity="0"/></radialGradient>'
@@ -304,7 +308,102 @@ def make(source: Path, name: str) -> Path:
     return out
 
 
+# README banners and the repositories' preview cards: a scene framed wide,
+# with the name and a line about the site. Text is drawn as paths, so the
+# images look the same everywhere without loading a font.
+
+FONTS = BRAND.parent / "theme" / "src" / "modsmith_sphinx_theme" / "modsmith" / "static"
+FRAMES = {
+    # name: (viewBox, width, height)
+    "banner": ("0 300 1920 660", 1280, 440),
+    "social": ("0 150 1920 960", 1280, 640),
+}
+
+
+@dataclass(frozen=True)
+class Banner:
+    scene: Callable[[str], str]  # Turns the home page's scene into this one.
+    tagline: str
+    name_colour: str
+    tagline_colour: str
+    outputs: dict[str, Path]  # Frame name to the file it is written to.
+
+
+BANNERS = {
+    "home": Banner(
+        lambda text: text,
+        "Modpacks, ready in the official launcher",
+        "#ffffff",
+        "#d3d7dc",
+        {"banner": ASSETS / "banner.svg"},
+    ),
+    "cli": Banner(
+        # The command types itself over the anvil, where the frame can see it.
+        lambda text: cli(text, prompt=(1180, 330, 8)),
+        "Modpacks from your terminal",
+        "#a6efae",
+        "#62c96f",
+        {"banner": ASSETS / "banner-cli.svg", "social": BRAND / "social-modsmith.svg"},
+    ),
+    "library": Banner(
+        lambda text: library(text, lift=100),
+        "Build your own modpack tools",
+        "#ffffff",
+        "#ffe0bf",
+        {
+            "banner": ASSETS / "banner-library.svg",
+            "social": BRAND / "social-modsmith-python.svg",
+        },
+    ),
+}
+
+
+def text_path(font: str, text: str, size: float, left: float, baseline: float) -> str:
+    """Draw text in one of the theme's fonts as SVG path data."""
+    from fontTools.pens.svgPathPen import SVGPathPen
+    from fontTools.pens.transformPen import TransformPen
+    from fontTools.ttLib import TTFont
+
+    face = TTFont(FONTS / font)
+    glyphs = face.getGlyphSet()
+    cmap = face.getBestCmap()
+    scale = size / face["head"].unitsPerEm
+    pen = SVGPathPen(glyphs)
+    # Line the first letter's ink up with the left edge.
+    x = -face["hmtx"][cmap[ord(text[0])]][1]
+    for char in text:
+        glyph = glyphs[cmap[ord(char)]]
+        glyph.draw(TransformPen(pen, (scale, 0, 0, -scale, left + x * scale, baseline)))
+        x += glyph.width
+    return pen.getCommands()
+
+
+def make_banner(banner: Banner) -> list[Path]:
+    text = banner.scene((ASSETS / "hero.svg").read_text(encoding="utf-8"))
+    words = (
+        f'<path fill="{banner.name_colour}" '
+        f'd="{text_path("chakra-petch-700.woff2", "Modsmith", 168, 130.92, 660)}"/>'
+        f'<path fill="{banner.tagline_colour}" '
+        f'd="{text_path("chakra-petch-600.woff2", banner.tagline, 50, 127.5, 738)}"/>'
+    )
+    text = text.replace("</svg>", words + "</svg>", 1)
+    written = []
+    for frame, out in banner.outputs.items():
+        view, width, height = FRAMES[frame]
+        framed = text.replace(
+            'viewBox="0 0 1920 1080"',
+            f'viewBox="{view}" width="{width}" height="{height}"',
+            1,
+        )
+        out.write_text(framed, encoding="utf-8", newline="\n")
+        written.append(out)
+    return written
+
+
 if __name__ == "__main__":
     for source in (ASSETS / "hero.svg", ASSETS / "hero-small.svg"):
         for name in VARIANTS:
             print(make(source, name))
+    for banner in BANNERS.values():
+        for out in make_banner(banner):
+            print(out)

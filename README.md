@@ -2,16 +2,23 @@
   <img src="site/assets/banner.svg" alt="Modsmith" width="100%">
 </p>
 
-# Modsmith's website
+<p align="center">
+  <strong>The source of modsmithmc.org, and the theme all of Modsmith's sites share.</strong>
+</p>
 
-The source of [modsmithmc.org](https://modsmithmc.org/), and
-the theme that all of Modsmith's sites share.
+<p align="center">
+  <a href="https://modsmithmc.org/">Website</a> · <a href="https://modsmithmc.org/modsmith/">Command line</a> · <a href="https://modsmithmc.org/modsmith-python/">Python library</a>
+</p>
+
+---
+
+## Sites
 
 | Address | What it is | Built from |
 | --- | --- | --- |
-| [`/`](https://modsmithmc.org/) | The home page, for players | `site/` in this repository |
-| [`/modsmith/`](https://modsmithmc.org/modsmith/) | The command line's guide | [ModsmithMC/modsmith](https://github.com/ModsmithMC/modsmith) |
-| [`/modsmith-python/`](https://modsmithmc.org/modsmith-python/) | The Python library's guide | [ModsmithMC/modsmith-python](https://github.com/ModsmithMC/modsmith-python) |
+| [`/`](https://modsmithmc.org/) | The project's home: what Modsmith does, and where to start | `site/` in this repository |
+| [`/modsmith/`](https://modsmithmc.org/modsmith/) | The command line's guide, with a page for every command | [ModsmithMC/modsmith](https://github.com/ModsmithMC/modsmith) |
+| [`/modsmith-python/`](https://modsmithmc.org/modsmith-python/) | The Python library's guide and API reference | [ModsmithMC/modsmith-python](https://github.com/ModsmithMC/modsmith-python) |
 
 Each repository publishes its own pages with GitHub Pages. This repository is
 the organization's site, so it owns the domain, and the other two appear under
@@ -42,6 +49,17 @@ each old address that sends visitors to the new one.
 for the GitHub organization, and `logo.png`, with a margin around it.
 Both are drawn from `site/assets/logo.svg`, one block per pixel.
 
-The `social-*.png` cards, 1280 by 640, are the repositories' preview images on
-GitHub. Each is its README banner reframed with more sky, from the matching
-`.svg` beside it; render one with a headless browser at that size.
+Each site has its own scene of the same hill and anvil: night for the home
+page, a terminal's green for the command line, and sunrise at the forge for the
+library. [`brand/scenes.py`](brand/scenes.py) draws the other two from the home
+page's `site/assets/hero.svg`, along with each site's README banner
+(`site/assets/banner*.svg`) and the repositories' preview cards
+(`brand/social-*.svg`):
+
+```bash
+uv run --no-project --with fonttools --with brotli python brand/scenes.py
+```
+
+The `social-*.png` cards, 1280 by 640, are what GitHub shows when a repository
+is shared; render each from its `.svg` with a headless browser at that size,
+and upload it in the repository's settings.
