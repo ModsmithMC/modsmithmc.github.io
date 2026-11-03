@@ -10,11 +10,6 @@
   line-height: 1.04;
 }
 
-.band-inner.single {
-  display: block;
-  max-width: 860px;
-}
-
 /* Install */
 
 .install-band .lede {
@@ -232,4 +227,26 @@
 
 .band-copy a.more {
   font-weight: 600;
+}
+
+.shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.shot figcaption {
+  padding: 8px 12px;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+/* Grid items shrink with the page instead of growing to their longest line. */
+.band-inner > *,
+.install-steps li {
+  min-width: 0;
+}
+
+.install-steps {
+  grid-template-columns: minmax(0, 1fr);
 }
