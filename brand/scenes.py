@@ -393,7 +393,7 @@ BANNERS = {
         "Modpacks from your terminal",
         "#a6efae",
         "#62c96f",
-        {"banner": ASSETS / "banner-cli.svg", "social": BRAND / "social-modsmith.svg"},
+        {"banner": ASSETS / "banner-cli.svg", "social": BRAND / "social-modsmith-cli.svg"},
     ),
     "library": Banner(
         lambda text: library(text, lift=100),

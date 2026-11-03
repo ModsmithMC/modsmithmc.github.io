@@ -4,6 +4,20 @@
 {%- block extrahead %}
 {# This page is served from any path, so its links need a fixed base. #}
 <base href="{{ theme_base_url }}">
+{%- if theme_moved %}
+{# Pages under a moved prefix go to the same page under its new one. #}
+<script>
+(() => {
+  const path = location.pathname;
+  for (const [from, to] of {{ theme_moved|tojson }}) {
+    if (path === from.slice(0, -1) || path.startsWith(from)) {
+      location.replace(to + path.slice(from.length) + location.search + location.hash);
+      return;
+    }
+  }
+})();
+</script>
+{%- endif %}
 {{- super() }}
 {%- endblock %}
 
