@@ -2418,7 +2418,7 @@ a[data-kind="cmd"]::before,
 }
 
 .launcher-demo .launcher-banner {
-  background: #0c1016 url("hero-small.svg") 70% 100% / cover no-repeat;
+  background: #0c1016 url("launcher-banner.svg") 70% 100% / cover no-repeat;
   image-rendering: pixelated;
 }
 
