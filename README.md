@@ -38,8 +38,8 @@ each old address that sends visitors to the new one.
 
 ## Brand
 
-[`brand/`](brand/) holds the logo as PNG: `avatar.png` on the site's dark
-background, used for the GitHub organization, and `logo.png` on transparency.
+[`brand/`](brand/) holds the logo as PNG: `avatar.png`, large on transparency,
+for the GitHub organization, and `logo.png`, with a margin around it.
 Both are drawn from `site/assets/logo.svg`, one block per pixel.
 
 The `social-*.png` cards, 1280 by 640, are the repositories' preview images on
